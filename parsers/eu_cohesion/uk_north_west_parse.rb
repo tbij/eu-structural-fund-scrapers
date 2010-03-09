@@ -2,6 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/eu_cohesion_base')
 
 class EuCohesion::UkNorthWestParse
 
+  include EuCohesion::ParserBase
+
   def perform result
     @projects = []
     resources = result.scraped_resources
@@ -12,7 +14,7 @@ class EuCohesion::UkNorthWestParse
       parse_table table, index
     end
 
-    write_csv
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/uk_north_west.csv'
   end
   
   def parse_table table, index
@@ -25,13 +27,10 @@ class EuCohesion::UkNorthWestParse
         puts attributes.inspect
         first = false
       else
-        project = EuCohesion::Project.new
-        project.priority = priority
-        values = (row/'td').collect {|x| x.inner_text}
-        attributes.each_with_index do |attribute, index|
-          project.morph(attribute, values[index])
+        add_project(row, attributes) do |data, project|
+          project.priority = priority
+          values = (data/'td').collect {|x| x.inner_text}
         end
-        @projects << project
       end
     end
   end
@@ -49,13 +48,4 @@ class EuCohesion::UkNorthWestParse
     ]
   end
   
-  def write_csv
-    output = FasterCSV.generate do |csv|
-      csv << attribute_keys
-      @projects.each do |project|
-        csv << attribute_keys.collect { |key| project.send(key) }
-      end
-    end
-    GitRepo.write_parsed 'eu_cohesion/uk_north_west.csv', output
-  end
 end

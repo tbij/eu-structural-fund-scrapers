@@ -2,21 +2,27 @@ require File.expand_path(File.dirname(__FILE__) + '/eu_cohesion_base')
 
 class EuCohesion::UkYorkshireParse
 
+  include EuCohesion::ParserBase
+
   def perform result
     @projects = []
     resources = result.scraped_resources
     text = resources.first.contents
     parse text
-    
-    puts @projects.last.morph_attributes.keys.inspect
-    write_csv
+
+    write_csv attributes, attribute_keys, 'eu_cohesion/uk_yorkshire.csv'
   end
   
   def parse text
     text.each_line do |line|
       case line
         when /^[A-Z]/
-          add_project line unless line[/^Last Updated/]
+          unless line[/^Last Updated/]
+            add_project(line) do |data, project|
+              data.gsub!(/(\d) /, '\1  ')
+              values_from_line(data)
+            end
+          end
       end
     end
   end
@@ -46,27 +52,4 @@ class EuCohesion::UkYorkshireParse
     ]
   end
   
-  def add_project line
-    project = EuCohesion::Project.new
-    line.strip!
-    line.gsub!(/(\d) /, '\1  ')
-    line.gsub!('  ', "\t")
-    line.squeeze!("\t")
-    values = line.split("\t")
-    attributes.each_with_index do |attribute, index|
-      project.morph(attribute.sub(' / ',' '), values[index])
-    end
-    
-    @projects << project
-  end
-  
-  def write_csv
-    output = FasterCSV.generate do |csv|
-      csv << attributes
-      @projects.each do |project|
-        csv << attribute_keys.collect { |key| project.send(key) }
-      end
-    end
-    GitRepo.write_parsed 'eu_cohesion/uk_yorkshire.csv', output
-  end
 end
