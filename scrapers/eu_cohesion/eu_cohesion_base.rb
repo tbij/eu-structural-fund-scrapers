@@ -4,8 +4,7 @@ end
 module EuCohesion::ScraperBase
 
   def perform result
-    resource = WebResource.scrape(uri, result)
-    result.add_resource resource
+    WebResource.scrape_and_add(uri, result)
   end
 
 end
