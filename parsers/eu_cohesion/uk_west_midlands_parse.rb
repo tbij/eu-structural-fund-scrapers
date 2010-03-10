@@ -8,17 +8,10 @@ class EuCohesion::UkWestMidlandsParse
     @projects = []
     resources = result.scraped_resources
     text = resources.first.contents
-    data = parse text
+    parse text
 
     file = 'eu_cohesion/uk_west_midlands.csv'
     write_csv attributes, attribute_keys, file
-
-    # output = FasterCSV.generate do |csv|
-      # data.each do |row|
-        # csv << row.collect { |x| x.strip }
-      # end
-    # end
-    # GitRepo.write_parsed file, output
   end
   
   def parse text        
@@ -74,10 +67,6 @@ class EuCohesion::UkWestMidlandsParse
       end
       ignore = false if (ignore && line[/^\s+Date\s+$/])
     end
-    
-    y data.collect {|x| x.join(' | ')}
-        # add_project(line) {|data, project| data.unpack(field_pattern)}
-    data
   end
 
   def attributes
@@ -100,7 +89,6 @@ class EuCohesion::UkWestMidlandsParse
     :budget_approved_erdf,
     :budget_approved_other_public,
     :budget_approved_private
-    # :budget_source 
     ]
   end
   
