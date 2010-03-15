@@ -1,3 +1,5 @@
+require 'pdf/reader'
+
 module EuCohesion
 end
 

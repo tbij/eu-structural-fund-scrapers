@@ -8,10 +8,11 @@ class EuCohesion::IndexParse
     text = resource.contents
 
     write_html text
-    write_csv text
+    name = 'eu_cohesion/index.csv'
+    write_csv text, name
   end
   
-  def write_csv text
+  def write_csv text, name
     country = nil
 
     output = FasterCSV.generate do |csv|
@@ -27,11 +28,13 @@ class EuCohesion::IndexParse
             region = $1
             uri = $2
             uri.sub!('..','http://ec.europa.eu/regional_policy/country/commu/beneficiaries/')
-            csv << [translate_uri(uri, country)] unless uri == '#'
+            translated = translate_uri(uri, country)
+            puts translated
+            csv << [country,region,uri,translated] unless uri == '#'
         end
       end
     end
-    GitRepo.write_parsed 'eu_cohesion/index.csv', output
+    GitRepo.write_parsed name, output
   end
   
   def translate_uri uri, country
