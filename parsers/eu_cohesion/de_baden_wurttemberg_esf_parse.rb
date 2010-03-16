@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/eu_cohesion_base')
 
-class EuCohesion::DeBadenWurttenbergEsfParse
+class EuCohesion::DeBadenWurttembergEsfParse
 
   include EuCohesion::ParserBase
 
@@ -28,12 +28,7 @@ class EuCohesion::DeBadenWurttenbergEsfParse
 
     by_position(groups) do |group, by_position|
       if by_position.keys.size != 4
-        # if by_position[429] && by_position[429].first.value == '/ Akti fü di V h'
-          # by_position[372] = (by_position[372] + by_position[429])
-          # by_position.delete(429)
-        # else
-          raise by_position.keys.inspect + ': ' + group.inspect + ' -> ' + by_position.to_yaml
-        # end
+        raise by_position.keys.inspect + ': ' + group.inspect + ' -> ' + by_position.to_yaml
       end
       add_project(by_position, resource)
     end
