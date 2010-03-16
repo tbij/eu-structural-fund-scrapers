@@ -56,11 +56,11 @@ module EuCohesion::ParserBase
 
   def format_match offset
     text = @stack[offset]
-    has_string_value?(text) && text.value[@formats[offset]]
+    has_string_value?(text) && text.value.strip[@formats[offset]]
   end
 
   def start_of_data text
-    !@started && has_string_value?(text) && (text.value == first_data_value)
+    !@started && has_string_value?(text) && (text.value.strip == first_data_value)
   end
 
   def group_text text
@@ -83,7 +83,7 @@ module EuCohesion::ParserBase
     File.open(name,'w') {|f| f.write output}
   end
 
-  def get_text_groups resource, formats, selector='text'
+  def get_text_groups resource, formats, selector='text', &block
     @formats = formats
     @stack = []
     @started = false
@@ -91,6 +91,7 @@ module EuCohesion::ParserBase
     @pdf_text = resource.contents
     @plain_pdf_text = resource.plain_pdf_contents
     xml = resource.xml_pdf_contents.gsub(" id="," id_attr=")
+    xml = yield xml if block
     doc = Hpricot.XML xml
         
     texts = (doc/selector).collect do |text|

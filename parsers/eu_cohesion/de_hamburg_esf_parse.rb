@@ -1,13 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/eu_cohesion_base')
 
-class EuCohesion::DeHamburgParse
+class EuCohesion::DeHamburgEsfParse
 
   include EuCohesion::ParserBase
 
   def perform result
     resources = result.scraped_resources
-    # resource = resources.detect {|r| r.web_resource.uri == 'http://www.hamburg.de/contentblob/1624550/data/efre-beguenstigte.pdf'}
-    resource = resources.detect {|r| r.web_resource.uri == 'http://www.esf-hamburg.de/contentblob/1379164/data/liste-gefoerderter-projekte.pdf'}
+    resource = resources.detect {|r| r.uri == 'http://www.esf-hamburg.de/contentblob/1379164/data/liste-gefoerderter-projekte.pdf'}
     parse resource
   end
   
@@ -30,10 +29,12 @@ class EuCohesion::DeHamburgParse
         end
         project.morph(attribute_keys[index], value)
       end
+      project.fund_type = 'ESF'
+      project.uri = resource.uri
       @projects << project
     end
 
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/de_hamburg.csv'
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/de_hamburg_esf.csv'
   end
 
   def attribute_keys
@@ -43,7 +44,9 @@ class EuCohesion::DeHamburgParse
       :projekt,
       :beginn,
       :ende,
-      :projektvolumen
+      :projektvolumen,
+      :fund_type,
+      :uri
     ]
   end
   

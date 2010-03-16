@@ -45,6 +45,7 @@ class EuCohesion::DeBerlinParse
         end
         project.morph(attribute_keys[index], value)
       end
+      project.uri = resource.uri
       @projects << project
     end
     
@@ -112,7 +113,8 @@ class EuCohesion::DeBerlinParse
     :projekt, 
     :datum_erstbewilligung, 
     :bewilligung_offentlicher, 
-    :gesamtauszahlungsbetrag
+    :gesamtauszahlungsbetrag,
+    :uri
     ]
   end
   
