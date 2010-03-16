@@ -77,8 +77,13 @@ module EuCohesion::ParserBase
       end
     end
   end
-  
-  def get_text_groups resource, formats
+
+  def write_out_csv name, &block
+    output = FasterCSV.generate { |csv| yield csv }
+    File.open(name,'w') {|f| f.write output}
+  end
+
+  def get_text_groups resource, formats, selector='text'
     @formats = formats
     @stack = []
     @started = false
@@ -88,25 +93,20 @@ module EuCohesion::ParserBase
     xml = resource.xml_pdf_contents.gsub(" id="," id_attr=")
     doc = Hpricot.XML xml
         
-    texts = (doc/'text').collect do |text|
+    texts = (doc/selector).collect do |text|
       attributes = text.attributes.to_hash
       text = text.inner_text
-      if parts = split_this[text]
+      if parts = split_this(text)
         parts.collect { |part| make_cell(attributes, part, parts.index(part)) }
       else
         make_cell(attributes, text, 0)
       end
     end.flatten
-    output = FasterCSV.generate do |csv|
-      texts.each {|text| csv << text.value }
-    end
-    File.open('texts.csv','w') {|f| f.write output}
+    write_out_csv('texts.csv') {|csv| texts.each {|t| csv << t.value } }
+
     texts.each {|text| group_text(text) }
     
-    output = FasterCSV.generate do |csv|
-      @groups.each {|texts| csv << texts.collect(&:value) }
-    end
-    File.open('groups.csv','w') {|f| f.write output}
+    write_out_csv('groups.csv') {|csv| @groups.each {|g| csv << g.collect(&:value) } }
     
     @groups.each do |group|
       raise group.inspect if group.select{|x|x.is_a?(Hash)}.size > 0 # check groups not hashes
@@ -118,4 +118,10 @@ module EuCohesion::ParserBase
     groups.collect{|g| g[index]}.collect(&:value).uniq.collect { |v| v.gsub('+','\+').gsub('(','\(').gsub(')','\)').gsub('[','\[').gsub(']','\]') }
   end
 
+  def by_position groups
+    groups.each do |group|
+      by_position = group.group_by {|x| x.left.to_i }
+      yield group, by_position
+    end
+  end
 end

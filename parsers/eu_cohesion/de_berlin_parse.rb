@@ -16,10 +16,7 @@ class EuCohesion::DeBerlinParse
     first_values = values_at_position groups, 0
     @projects = []
 
-    groups.each do |group|
-      project = EuCohesion::Project.new
-      by_position = group.group_by {|x| x.left.to_i }
-
+    by_position(groups) do |group, by_position|
       if by_position.keys.size == 4
         by_position.keys.inspect + ': ' + group.inspect + ' -> ' + by_position.inspect
         first_value = group.first.value
@@ -64,8 +61,8 @@ class EuCohesion::DeBerlinParse
     }
   end
 
-  def split_this
-    {
+  def split_this text
+    to_split = {
       'Brunennviertel 20.02.2008' =>
         ['Brunennviertel',
         '20.02.2008'],
@@ -106,6 +103,7 @@ class EuCohesion::DeBerlinParse
         ['UNIONHILFSWERK Sozialeinrichtungen gGmbH',
         'Kindertagesstätte Neukölln, Weserstraße 185, 12045 Berlin']
     }
+    to_split[text]
   end
 
   def attribute_keys
