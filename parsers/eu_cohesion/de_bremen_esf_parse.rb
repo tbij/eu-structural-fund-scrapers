@@ -76,7 +76,12 @@ class EuCohesion::DeBremenEsfParse
   end
 
   def split_this text
-    if text == 'IfW - Institut für Wissenstransfer an der Uni Bremen GmbH Excellenzinitiative'
+    case text
+    when /^(.+ GmbH)  (.+)$/
+      [$1,$2]
+    when /^(.+ GmbH & Co.KG)  (.+)$/
+      [$1,$2]
+    when /IfW - Institut für Wissenstransfer an der Uni Bremen GmbH Excellenzinitiative/
       ['IfW - Institut für Wissenstransfer an der Uni Bremen GmbH',
         'Excellenzinitiative']
     else
