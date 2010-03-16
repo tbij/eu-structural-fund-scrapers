@@ -67,7 +67,7 @@ module EuCohesion::ParserBase
     @started = true if start_of_data(text)
     if @started
       if has_string_value?(text)
-        @stack << text unless ignore_this[text.value]
+        @stack << text unless ignore_this[text.value.strip]
       else
         $stderr.write text.inspect
       end
@@ -124,5 +124,14 @@ module EuCohesion::ParserBase
       by_position = group.group_by {|x| x.left.to_i }
       yield group, by_position
     end
+  end
+
+  def split_this text
+    nil
+  end
+
+  def ignore_this
+    {
+    }
   end
 end

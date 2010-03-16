@@ -53,21 +53,5 @@ class EuCohesion::DeHamburgEfreParse
   def first_data_value 
     'Rolf Gleich'
   end
-
-  def split_this text
-    nil
-    # if text[/^(\d\d\.\d\d\.\d\d) (\d\d\.\d\d\.\d\d)$/]
-      # [$1, $2]
-    # else
-      # nil
-    # end
-  end
-
-  def ignore_this
-    {
-      # 'Verzeichnis der Begünstigten' => true,
-      # 'Stand Januar 2010' => true
-    }
-  end
   
 end
