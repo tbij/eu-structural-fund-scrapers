@@ -68,7 +68,7 @@ class EuCohesion::DeBadenWurttembergEsfParse
   end
 
   def split_this text
-    case text.strip
+    case text
       when /^(.+)(Förderprogramm für zusätzliche Ausbildungsplätze)$/
         [$1,'Förderprogramm für zusätzliche Ausbildungsplätze']
       else

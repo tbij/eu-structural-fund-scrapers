@@ -55,7 +55,12 @@ class EuCohesion::DeHamburgEsfParse
   end
 
   def split_this text
-    if text[/^(\d\d\.\d\d\.\d\d) (\d\d\.\d\d\.\d\d)$/]
+    case text
+    when /^(.+ GmbH)  (.+)$/
+      [$1,$2]
+    when /^(.+ GmbH & Co.KG)  (.+)$/
+      [$1,$2]
+    when /^(\d\d\.\d\d\.\d\d) (\d\d\.\d\d\.\d\d)$/
       [$1, $2]
     else
       nil

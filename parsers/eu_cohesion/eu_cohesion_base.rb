@@ -97,7 +97,7 @@ module EuCohesion::ParserBase
     texts = (doc/selector).collect do |text|
       attributes = text.attributes.to_hash
       text = text.inner_text
-      if parts = split_this(text)
+      if parts = split_this(text.strip)
         parts.collect { |part| make_cell(attributes, part, parts.index(part)) }
       else
         make_cell(attributes, text, 0)
