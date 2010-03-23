@@ -169,6 +169,7 @@ module EuCohesion::ParserBase
         end
       end
     end
+    
     Parser.print_column_histogram(results)
   end
 
