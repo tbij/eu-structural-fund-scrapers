@@ -151,4 +151,91 @@ module EuCohesion::ParserBase
     left_to_value = by_position.keys.collect {|k| "#{k} => #{by_position[k].collect(&:value).join(' ')}"}.join("\n")
     raise "#{keys}\n#{group.collect{|x|x.inspect}.join("\n")}\n#{left_to_value}"
   end
+
+  # NEW APPROACH BELOW
+
+  def print_histogram lines
+    results = []
+    @start = false
+    lines.each do |line|
+      line = line.mb_chars      
+      @start = true if line.include?(first_value)
+      if @start
+        if line.blank?
+        else
+          parts = Parser.values_from_line(line).compact
+          items = parts.map { |part| process_part(part, line) }.compact
+          results += items
+        end
+      end
+    end
+    Parser.print_column_histogram(results)
+  end
+
+  def handle_lines lines, uri
+    rows = []
+    groups = []
+    @start = false
+    @new = true
+    lines.each do |line|
+      line = line.mb_chars
+      @start = true if line.include?(first_value)
+      if @start
+        if line.strip.blank?
+          groups << rows unless rows.empty?
+          rows = []
+        else
+          parts = Parser.values_from_bounds(line,bounds).compact
+          items = parts.map { |part| process_part(part, line) }.compact
+          rows << items
+        end
+      end
+    end
+    groups << rows unless rows.empty?
+    entries = groups.collect do |rows|
+      columns = perform_split rows
+      values = do_join columns
+    end
+    @projects = []
+    entries.each do |values|
+      add_project(values, attribute_keys) { |data, project| data + [uri] }
+    end    
+  end
+  
+  def process_part part, line
+    [line.index(part), part]
+  end
+  
+  def do_join columns
+    values = []
+    columns.each do |items|
+      value = items.collect { |item| item[1] }.join(' ').squeeze(' ').strip
+      values << value
+    end
+    values
+  end
+
+  def perform_split rows
+    splits = Array.new(bounds.size) { |i| [] }
+    rows.each do |row|
+      row.each do |cell|
+        x = cell[0]
+        set = false
+        bounds.each_with_index do |bound, index|
+          if bound.is_a?(Array) && (x >= bound.first) && (x <= bound.last)
+            splits[index] << cell
+            set = true
+          elsif !bound.is_a?(Array) && x >= bound
+            splits[index] << cell
+            set = true
+          end
+        end
+        unless set
+          raise cell.inspect
+        end
+      end
+    end
+    splits
+  end
+
 end
