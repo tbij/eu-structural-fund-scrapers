@@ -28,6 +28,11 @@ module EuCohesion::ParserBase
     line.squeeze!("\t")
     line.split("\t")
   end
+
+  def result_from_scraper name  
+    scraper = Scraper.find_by_name(name)
+    scraper.last_scrape_result
+  end
   
   def add_project data, attribute_names=attributes, &block
     project = EuCohesion::Project.new
@@ -84,13 +89,19 @@ module EuCohesion::ParserBase
   end
 
   def get_text_groups resource, formats, selector='text', &block
+    pdf_text = resource.contents
+    plain_pdf_text = resource.plain_pdf_contents
+    xml = resource.xml_pdf_contents.gsub(" id="," id_attr=")
+    get_text_groups_from pdf_text, plain_pdf_text, xml, formats, selector, &block
+  end
+
+  def get_text_groups_from pdf_text, plain_pdf_text, xml, formats, selector='text', &block
+    @pdf_text = pdf_text
+    @plain_pdf_text = plain_pdf_text
     @formats = formats
     @stack = []
     @started = false
     @groups = []
-    @pdf_text = resource.contents
-    @plain_pdf_text = resource.plain_pdf_contents
-    xml = resource.xml_pdf_contents.gsub(" id="," id_attr=")
     xml = yield xml if block
     doc = Hpricot.XML xml
         
@@ -103,7 +114,7 @@ module EuCohesion::ParserBase
         make_cell(attributes, text, 0)
       end
     end.flatten
-    write_out_csv('texts.csv') {|csv| texts.each {|t| csv << t.value } }
+    write_out_csv('texts.csv') {|csv| texts.each {|t| csv << t.value if t.value } }
 
     texts.each {|text| group_text(text) }
     
@@ -133,5 +144,11 @@ module EuCohesion::ParserBase
   def ignore_this
     {
     }
+  end
+  
+  def log_by_position by_position, group
+    keys = by_position.keys.inspect
+    left_to_value = by_position.keys.collect {|k| "#{k} => #{by_position[k].collect(&:value).join(' ')}"}.join("\n")
+    raise "#{keys}\n#{group.collect{|x|x.inspect}.join("\n")}\n#{left_to_value}"
   end
 end
