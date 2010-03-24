@@ -1,29 +1,30 @@
 require File.expand_path(File.dirname(__FILE__) + '/eu_cohesion_base')
 
-class EuCohesion::GrEducationLifelongLearningParse
+class EuCohesion::GrAdminReformParse
 
   include EuCohesion::ParserBase
 
   def perform result
     result = result_from_scraper('Gr scrape')
     resources = result.scraped_resources
-    uri = 'http://www.espa.gr/Shared/Download.aspx?cat=attachments&type=Documents&fileid=347'
+    uri = 'http://www.espa.gr/Shared/Download.aspx?cat=attachments&type=Documents&fileid=358'
     resource = resources.detect {|r| r.web_resource.uri == uri}
     text = resource.contents.mb_chars
-    text.gsub!(/^(.+(Εφαρµογή ξενόγλωσσων|Ανάπτυξη εθνικού συστήµατος|Μελέτη ανάπτυξης και βελτίωσης των|Εισαγωγική επιµόρφωση για))/) {|x| "\n" + x}
+    text.gsub!(/(  200(8|9)  )/) {|x| '     '+x+'        ' }
     lines = text.split("\n")
+    lines = lines.select {|x| !x[/(ΕΥ∆ ΕΠ ∆Μ 2007-2013|Μονάδα Α1 "Προγραµµατισµού")/] }
     # print_histogram lines
     handle_lines(lines, uri)
     @projects.pop
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_education_lifelong_learning.csv'
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_admin_reform.csv'
   end
 
   def bounds
-    [[0,26],[27,69],[70,78],[83,128],145]
+    [[0,18],[19,86],[88,100],[105,133],144]
   end
   
   def first_value
-    'Οργάνωση και υλοποίηση Επιτροπών'
+    'ΕΥ∆ ΕΠ "∆ιοικητική'
   end
 
   def attribute_keys
