@@ -15,7 +15,11 @@ class EuCohesion::GrEducationLifelongLearningParse
     # print_histogram lines
     handle_lines(lines, uri)
     @projects.pop
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_education_lifelong_learning.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
+  end
+
+  def csv_name
+    'eu_cohesion/gr_education_lifelong_learning.csv'
   end
 
   def bounds

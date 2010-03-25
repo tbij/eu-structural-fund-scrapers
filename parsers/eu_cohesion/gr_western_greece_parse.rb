@@ -14,9 +14,13 @@ class EuCohesion::GrWesternGreeceParse
     # print_histogram lines
     handle_lines(lines, uri)
     @projects.pop
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_western_greece.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
   end
-
+  
+  def csv_name
+    'eu_cohesion/gr_western_greece.csv'
+  end
+  
   def bounds
     [[0,45],[46,80],[94,99],[107,128],161]
   end

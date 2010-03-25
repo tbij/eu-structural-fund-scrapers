@@ -15,7 +15,11 @@ class EuCohesion::GrAtticaParse
     lines = lines.select {|x| !x[/(ΚΑΤΑΛΟΓΟΣ ∆ΙΚΑΙΟΥΧ|2007-2013)/]}
     print_histogram lines
     handle_lines(lines, uri)
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_attica.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
+  end
+
+  def csv_name
+    'eu_cohesion/gr_attica.csv'
   end
 
   def bounds

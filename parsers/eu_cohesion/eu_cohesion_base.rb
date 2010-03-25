@@ -22,6 +22,18 @@ module EuCohesion::ParserBase
     GitRepo.write_parsed file, output
   end
   
+  def translate
+    ScalpelTranslator.translate_csv_file csv_name, :translate => translate_fields, :convert => convert_fields
+  end
+  
+  def translate_fields
+    [:payee_name, :project_title, :fund]
+  end
+  
+  def convert_fields
+    :public_expenditure_listing
+  end
+
   def values_from_line line
     line.strip!
     line.gsub!('  ', "\t")

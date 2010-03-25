@@ -18,7 +18,11 @@ class EuCohesion::GrHumanResourcesDevelopmentParse
     project = @projects.detect { |x| x.project_title == 'Τεχνικός Σύµβουλος για την Υποστήριξη της ΕΥΣΕΚΤ ΕΚΤ'}
     project.project_title = 'Τεχνικός Σύµβουλος για την Υποστήριξη της ΕΥΣΕΚΤ'
     project.fund = 'ΕΚΤ'
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_human_resources_development.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
+  end
+
+  def csv_name
+    'eu_cohesion/gr_human_resources_development.csv'
   end
 
   def bounds

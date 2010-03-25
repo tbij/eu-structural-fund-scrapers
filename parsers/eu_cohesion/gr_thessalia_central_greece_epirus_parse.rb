@@ -13,7 +13,11 @@ class EuCohesion::GrThessaliaCentralGreeceEpirusParse
     lines = text.split("\n")
     # print_histogram lines
     handle_lines(lines, uri)
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_thessalia_central_greece_epirus_parse.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
+  end
+
+  def csv_name
+    'eu_cohesion/gr_thessalia_central_greece_epirus_parse.csv'
   end
 
   def bounds

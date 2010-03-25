@@ -13,7 +13,11 @@ class EuCohesion::GrMacedoniaThraceParse
     # print_histogram lines
     handle_lines(lines, uri)
     @projects.pop
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/gr_macedonia_thrace.csv'
+    write_csv attribute_keys, attribute_keys, csv_name
+  end
+
+  def csv_name
+    'eu_cohesion/gr_macedonia_thrace.csv'
   end
 
   def bounds
