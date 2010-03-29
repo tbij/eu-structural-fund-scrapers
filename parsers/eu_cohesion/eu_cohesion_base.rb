@@ -12,12 +12,15 @@ class EuCohesion::Project
 end
 
 module EuCohesion::ParserBase
-  def write_csv labels, keys, file
+  def write_csv labels, keys, file, fields_to_convert=[]
     output = FasterCSV.generate do |csv|
       csv << labels
       @projects.each do |project|
         csv << keys.collect { |key| project.send(key) }
       end
+    end
+    unless fields_to_convert.empty?
+      output = ScalpelConverter.convert_csv(output, :convert => fields_to_convert)
     end
     GitRepo.write_parsed file, output
   end
@@ -116,7 +119,7 @@ module EuCohesion::ParserBase
     @groups = []
     xml = yield xml if block
     doc = Hpricot.XML xml
-        
+
     texts = (doc/selector).collect do |text|
       attributes = text.attributes.to_hash
       text = text.inner_text
@@ -129,15 +132,15 @@ module EuCohesion::ParserBase
     write_out_csv('texts.csv') {|csv| texts.each {|t| csv << t.value if t.value } }
 
     texts.each {|text| group_text(text) }
-    
+
     write_out_csv('groups.csv') {|csv| @groups.each {|g| csv << g.collect(&:value) } }
-    
+
     @groups.each do |group|
       raise group.inspect if group.select{|x|x.is_a?(Hash)}.size > 0 # check groups not hashes
     end
     @groups
   end
-  
+
   def values_at_position groups, index
     groups.collect{|g| g[index]}.collect(&:value).uniq.collect { |v| v.gsub('+','\+').gsub('(','\(').gsub(')','\)').gsub('[','\[').gsub(']','\]') }
   end
