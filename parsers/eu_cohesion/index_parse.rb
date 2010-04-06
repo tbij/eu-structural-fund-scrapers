@@ -31,6 +31,9 @@ class EuCohesion::IndexParse
             translated = translate_uri(uri, country)
             puts translated
             csv << [country,region,uri,translated] unless uri == '#'
+          when /^new Array\("([^"]+)", ""\)/
+            region = $1
+            csv << [country,region,'','']
         end
       end
     end
