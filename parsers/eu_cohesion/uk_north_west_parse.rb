@@ -14,7 +14,7 @@ class EuCohesion::UkNorthWestParse
       parse_table table, index
     end
 
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/uk_north_west.csv'
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/uk_north_west_erdf.csv'
   end
   
   def parse_table table, index
