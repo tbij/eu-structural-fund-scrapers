@@ -120,18 +120,23 @@ module EuCohesion::ParserBase
     xml = yield xml if block
     doc = Hpricot.XML xml
 
-    texts = (doc/selector).collect do |text|
+    @texts = (doc/selector).collect do |text|
       attributes = text.attributes.to_hash
       text = text.inner_text
       if parts = split_this(text.strip)
-        parts.collect { |part| make_cell(attributes, part, parts.index(part)) }
+        delta = 0
+        parts.collect do |part|
+          cell = make_cell(attributes, part, delta)
+          delta += 5
+          cell
+        end
       else
         make_cell(attributes, text, 0)
       end
     end.flatten
-    write_out_csv('texts.csv') {|csv| texts.each {|t| csv << t.value if t.value } }
+    write_out_csv('texts.csv') {|csv| @texts.each {|t| csv << t.value if t.value } }
 
-    texts.each {|text| group_text(text) }
+    @texts.each {|text| group_text(text) }
 
     write_out_csv('groups.csv') {|csv| @groups.each {|g| csv << g.collect(&:value) } }
 

@@ -14,12 +14,16 @@ class EuCohesion::DeBadenWurttembergEsfParse
     @first_data_value = '2-Rad-Service Oberstenfeld'
     parse resource, '1'
 
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/de_baden_wurttenberg_esf_2007.csv'
+
+    @projects = []
+
     # 2008
     resource = resources.detect {|r| r.web_resource.uri == 'http://www.esf-bw.de/esf/fileadmin/user_upload/downloads/Ministerium_fuer_Arbeit_und_Soziales/Verzeichnis_der_Beguenstigten/ESF_BW_Liste_der_Beguenstigten_2008.pdf'}
     @first_data_value = 'Schleich GmbH'
     parse resource, '0'
 
-    write_csv attribute_keys, attribute_keys, 'eu_cohesion/de_baden_wurttenberg_esf.csv'
+    write_csv attribute_keys, attribute_keys, 'eu_cohesion/de_baden_wurttenberg_esf_2008.csv'
   end
 
   def parse resource, font_number
